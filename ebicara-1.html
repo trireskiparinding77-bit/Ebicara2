@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>eBicara — Latihan Ngobrol Bahasa Inggris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700;9..144,900&family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal-deep:#16443B;
+  --teal-deeper:#0E332C;
+  --cream:#FAF3E7;
+  --cream-dim:#F0E7D6;
+  --coral:#FF6F59;
+  --coral-dark:#E8553F;
+  --amber:#E8A33D;
+  --mint:#BFE3D0;
+  --charcoal:#232323;
+  --line:rgba(35,35,35,0.1);
+  --shadow:0 8px 30px rgba(14,51,44,0.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Lexend',system-ui,sans-serif;
+  background:var(--cream);
+  color:var(--charcoal);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.font-display{font-family:'Fraunces',serif;}
+.font-mono{font-family:'JetBrains Mono',monospace;}
+
+::selection{background:var(--coral); color:#fff;}
+
+/* ===== App shell ===== */
+#app{min-height:100vh; display:flex; flex-direction:column;}
+.screen{display:none; flex:1; flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ===== Waveform signature element ===== */
+.wave-divider{
+  width:100%; height:28px; overflow:hidden; line-height:0;
+}
+.wave-divider svg{width:100%; height:100%; display:block;}
+
+@keyframes pulseRing{
+  0%{transform:scale(0.9); opacity:0.55;}
+  70%{transform:scale(1.6); opacity:0;}
+  100%{transform:scale(1.6); opacity:0;}
+}
+@keyframes pulseRingFast{
+  0%{transform:scale(0.85); opacity:0.7;}
+  70%{transform:scale(1.4); opacity:0;}
+  100%{transform:scale(1.4); opacity:0;}
+}
+
+/* ===== Top bar (shared) ===== */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 22px;
+  background:var(--teal-deep);
+  color:var(--cream);
+  position:sticky; top:0; z-index:50;
+}
+.topbar .brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:34px; height:34px; border-radius:50%;
+  background:var(--coral);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.brand-mark svg{width:18px; height:18px;}
+.brand-name{font-family:'Fraunces',serif; font-weight:700; font-size:1.25rem; letter-spacing:0.01em;}
+.topbar-actions{display:flex; gap:8px;}
+.icon-btn{
+  width:38px; height:38px; border-radius:50%;
+  border:1px solid rgba(250,243,231,0.25);
+  background:transparent; color:var(--cream);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background .15s ease, transform .1s ease;
+}
+.icon-btn:hover{background:rgba(250,243,231,0.12);}
+.icon-btn:active{transform:scale(0.94);}
+.icon-btn svg{width:18px; height:18px;}
+.back-btn{
+  display:flex; align-items:center; gap:6px;
+  background:transparent; border:none; color:var(--cream);
+  font-family:'Lexend'; font-size:0.95rem; cursor:pointer;
+  padding:6px 4px;
+}
+.back-btn svg{width:18px; height:18px;}
+
+/* ===== HOME SCREEN ===== */
+.hero{
+  background:linear-gradient(180deg, var(--teal-deep) 0%, var(--teal-deeper) 100%);
+  color:var(--cream);
+  padding:36px 22px 0;
+  position:relative;
+}
+.hero-inner{max-width:640px; margin:0 auto; text-align:center; padding-bottom:34px;}
+.hero-eyebrow{
+  font-family:'JetBrains Mono'; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--mint); margin-bottom:14px; display:block;
+}
+.hero h1{
+  font-family:'Fraunces',serif; font-weight:600; font-size:clamp(2.1rem,7vw,3rem);
+  line-height:1.08; letter-spacing:-0.01em; margin-bottom:14px;
+}
+.hero h1 em{font-style:italic; color:var(--amber); font-weight:500;}
+.hero p{font-size:1rem; color:rgba(250,243,231,0.82); max-width:440px; margin:0 auto; line-height:1.55;}
+
+.mic-hero{
+  margin:30px auto 0; width:108px; height:108px; position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.mic-hero .ring{
+  position:absolute; inset:0; border-radius:50%;
+  border:1.5px solid var(--coral);
+  animation:pulseRing 2.6s ease-out infinite;
+}
+.mic-hero .ring:nth-child(2){animation-delay:0.9s;}
+.mic-hero .ring:nth-child(3){animation-delay:1.8s;}
+.mic-hero .core{
+  width:64px; height:64px; border-radius:50%; background:var(--coral);
+  display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(255,111,89,0.4);
+  z-index:2;
+}
+.mic-hero .core svg{width:28px; height:28px; color:#fff;}
+
+.mode-section{padding:0 20px 40px; max-width:760px; margin:0 auto; width:100%;}
+.mode-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:-22px; position:relative; z-index:5;
+}
+@media(max-width:560px){.mode-grid{grid-template-columns:1fr;}}
+.mode-card{
+  background:#fff; border-radius:18px; padding:22px 20px; cursor:pointer;
+  box-shadow:var(--shadow); border:1px solid var(--line);
+  transition:transform .15s ease, box-shadow .15s ease;
+  text-align:left;
+}
+.mode-card:hover{transform:translateY(-3px);}
+.mode-card:active{transform:translateY(0);}
+.mode-card .tag{
+  font-family:'JetBrains Mono'; font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--coral-dark); margin-bottom:10px; display:inline-block;
+}
+.mode-card h3{font-family:'Fraunces',serif; font-size:1.32rem; font-weight:600; margin-bottom:6px;}
+.mode-card p{font-size:0.88rem; color:#5a5a52; line-height:1.45;}
+.mode-card .arrow{margin-top:14px; display:flex; align-items:center; gap:6px; color:var(--coral-dark); font-size:0.85rem; font-weight:500;}
+.mode-card .arrow svg{width:14px; height:14px;}
+
+.level-row{margin-top:26px;}
+.level-row label{font-family:'JetBrains Mono'; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:#8a8478; display:block; margin-bottom:10px;}
+.level-pills{display:flex; gap:8px; flex-wrap:wrap;}
+.level-pill{
+  padding:9px 16px; border-radius:999px; border:1.5px solid var(--line);
+  background:#fff; cursor:pointer; font-size:0.88rem; font-weight:500; color:var(--charcoal);
+  transition:all .15s ease;
+}
+.level-pill.active{background:var(--teal-deep); border-color:var(--teal-deep); color:var(--cream);}
+
+.home-footer-links{display:flex; justify-content:center; gap:18px; margin-top:30px;}
+.text-link{
+  font-size:0.86rem; color:#5a5a52; background:none; border:none; cursor:pointer;
+  display:flex; align-items:center; gap:6px; text-decoration:underline; text-underline-offset:3px;
+}
+
+/* ===== SCENARIO SCREEN ===== */
+.scenario-screen-body{padding:24px 20px 40px; max-width:760px; margin:0 auto; width:100%;}
+.section-title{font-family:'Fraunces',serif; font-size:1.5rem; font-weight:600; margin-bottom:4px;}
+.section-sub{color:#6b665b; font-size:0.92rem; margin-bottom:20px;}
+.scenario-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+@media(max-width:520px){.scenario-grid{grid-template-columns:1fr;}}
+.scenario-card{
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 16px;
+  display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.scenario-card:hover{border-color:var(--coral); transform:translateY(-2px);}
+.scenario-card .emoji{font-size:1.6rem; flex-shrink:0; width:42px; height:42px; border-radius:11px; background:var(--mint); display:flex; align-items:center; justify-content:center;}
+.scenario-card h4{font-size:0.97rem; font-weight:600; margin-bottom:2px;}
+.scenario-card span{font-size:0.78rem; color:#7a7468;}
+
+/* ===== CONVERSATION SCREEN ===== */
+.convo-topbar{background:var(--teal-deep); color:var(--cream); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:40;}
+.convo-meta{display:flex; flex-direction:column;}
+.convo-meta .title{font-family:'Fraunces',serif; font-weight:600; font-size:1.02rem;}
+.convo-meta .sub{font-family:'JetBrains Mono'; font-size:0.68rem; color:var(--mint); letter-spacing:0.06em; text-transform:uppercase; margin-top:2px;}
+
+.chat-area{
+  flex:1; overflow-y:auto; padding:20px 16px 140px; max-width:720px; margin:0 auto; width:100%;
+}
+.bubble-row{display:flex; margin-bottom:16px;}
+.bubble-row.user{justify-content:flex-end;}
+.bubble{
+  max-width:78%; padding:13px 16px; border-radius:16px; font-size:0.95rem; line-height:1.5;
+}
+.bubble-row.ai .bubble{background:#fff; border:1px solid var(--line); border-bottom-left-radius:4px;}
+.bubble-row.user .bubble{background:var(--teal-deep); color:var(--cream); border-bottom-right-radius:4px;}
+
+.correction-card{
+  max-width:78%; margin:6px 0 16px auto; background:var(--cream-dim); border:1px solid rgba(232,163,61,0.4);
+  border-radius:12px; padding:11px 14px; font-size:0.83rem;
+}
+.correction-card .ch{display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono'; font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--coral-dark); margin-bottom:8px;}
+.correction-item{margin-bottom:7px;}
+.correction-item:last-child{margin-bottom:0;}
+.correction-item .orig{color:#a14a3f; text-decoration:line-through; opacity:0.75;}
+.correction-item .fix{color:#1a6e4f; font-weight:600;}
+.correction-item .why{display:block; color:#6b665b; margin-top:2px; font-size:0.8rem;}
+
+.vocab-tip{
+  max-width:78%; margin:0 0 16px auto; background:var(--mint); border-radius:12px; padding:10px 14px; font-size:0.83rem; color:#0e332c;
+}
+.vocab-tip b{font-family:'JetBrains Mono'; font-size:0.68rem; letter-spacing:0.07em; text-transform:uppercase; display:block; margin-bottom:4px; color:#0e332c;}
+
+.typing-indicator{display:flex; gap:4px; padding:13px 16px; background:#fff; border:1px solid var(--line); border-radius:16px; width:fit-content;}
+.typing-indicator span{width:6px; height:6px; border-radius:50%; background:#bdb8aa; animation:typingBlink 1.2s infinite ease-in-out;}
+.typing-indicator span:nth-child(2){animation-delay:0.2s;}
+.typing-indicator span:nth-child(3){animation-delay:0.4s;}
+@keyframes typingBlink{0%,80%,100%{opacity:0.3;} 40%{opacity:1;}}
+
+.convo-controls{
+  position:fixed; bottom:0; left:0; right:0; z-index:45;
+  background:linear-gradient(180deg, rgba(250,243,231,0) 0%, var(--cream) 30%);
+  padding:18px 16px 22px;
+}
+.convo-controls-inner{max-width:720px; margin:0 auto; display:flex; align-items:center; gap:10px;}
+.text-fallback{
+  flex:1; display:flex; align-items:center; background:#fff; border:1.5px solid var(--line); border-radius:999px; padding:6px 6px 6px 16px;
+}
+.text-fallback input{flex:1; border:none; outline:none; font-family:'Lexend'; font-size:0.92rem; background:transparent;}
+.text-fallback button{
+  width:36px; height:36px; border-radius:50%; border:none; background:var(--teal-deep); color:#fff; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.text-fallback button svg{width:16px; height:16px;}
+
+.mic-btn-wrap{position:relative; width:62px; height:62px; flex-shrink:0;}
+.mic-btn-wrap .ring{position:absolute; inset:0; border-radius:50%; border:1.5px solid var(--coral); opacity:0; animation:pulseRingFast 1.5s ease-out infinite;}
+.mic-btn-wrap.listening .ring{opacity:1;}
+.mic-btn-wrap .ring:nth-child(2){animation-delay:0.45s;}
+.mic-btn{
+  width:62px; height:62px; border-radius:50%; border:none; background:var(--coral); color:#fff; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(255,111,89,0.4); position:relative; z-index:2;
+  transition:transform .12s ease, background .15s ease;
+}
+.mic-btn:active{transform:scale(0.93);}
+.mic-btn.listening{background:var(--coral-dark);}
+.mic-btn svg{width:24px; height:24px;}
+.mic-btn:disabled{background:#cfc8b8; cursor:not-allowed; box-shadow:none;}
+
+.interim-text{
+  position:fixed; bottom:96px; left:0; right:0; text-align:center; font-size:0.85rem; color:#7a7468; font-style:italic; padding:0 24px;
+}
+
+/* ===== Mic permission banner ===== */
+.mic-permission-banner{
+  display:none; align-items:center; gap:12px; max-width:720px; margin:14px auto 0; padding:14px 16px;
+  background:var(--cream-dim); border:1.5px solid var(--amber); border-radius:14px;
+}
+.mic-permission-banner.show{display:flex;}
+.mic-permission-banner .mpb-icon{
+  width:38px; height:38px; border-radius:50%; background:var(--amber); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.mic-permission-banner .mpb-icon svg{width:18px; height:18px; color:#fff;}
+.mic-permission-banner .mpb-text{flex:1;}
+.mic-permission-banner .mpb-text strong{display:block; font-size:0.9rem; margin-bottom:2px;}
+.mic-permission-banner .mpb-text span{font-size:0.8rem; color:#6b665b; line-height:1.4;}
+.mic-permission-banner.denied{border-color:var(--coral);}
+.mic-permission-banner.denied .mpb-icon{background:var(--coral);}
+.mpb-btn{
+  flex-shrink:0; font-family:'Lexend'; font-weight:500; font-size:0.83rem; padding:9px 14px; border-radius:999px;
+  border:none; background:var(--teal-deep); color:#fff; cursor:pointer; white-space:nowrap;
+}
+.mpb-btn:active{transform:scale(0.96);}
+
+.end-session-btn{
+  position:fixed; top:14px; right:16px;
+}
+
+/* ===== SUMMARY MODAL ===== */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(14,51,44,0.55); z-index:100; display:none; align-items:flex-end; justify-content:center;
+}
+.modal-overlay.active{display:flex;}
+@media(min-width:640px){.modal-overlay{align-items:center;}}
+.modal-card{
+  background:var(--cream); width:100%; max-width:520px; border-radius:24px 24px 0 0; padding:30px 26px 34px; max-height:88vh; overflow-y:auto;
+}
+@media(min-width:640px){.modal-card{border-radius:22px;}}
+.modal-card h2{font-family:'Fraunces',serif; font-size:1.5rem; margin-bottom:4px;}
+.score-badge{
+  display:inline-flex; align-items:baseline; gap:4px; background:var(--teal-deep); color:var(--cream); padding:8px 16px; border-radius:14px; margin:14px 0;
+}
+.score-badge .num{font-family:'Fraunces',serif; font-size:1.8rem; font-weight:700;}
+.score-badge .denom{font-family:'JetBrains Mono'; font-size:0.85rem; opacity:0.8;}
+.summary-block{margin-bottom:16px;}
+.summary-block h4{font-family:'JetBrains Mono'; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--coral-dark); margin-bottom:7px;}
+.summary-block p{font-size:0.93rem; line-height:1.6; color:var(--charcoal);}
+.summary-block ul{padding-left:18px; font-size:0.93rem; line-height:1.65;}
+.modal-actions{display:flex; gap:10px; margin-top:22px;}
+
+/* ===== Buttons ===== */
+.btn{
+  font-family:'Lexend'; font-weight:500; font-size:0.92rem; padding:12px 22px; border-radius:999px; border:none; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:transform .12s ease, opacity .15s ease;
+}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--coral); color:#fff;}
+.btn-ghost{background:transparent; color:var(--charcoal); border:1.5px solid var(--line);}
+.btn-block{width:100%;}
+
+/* ===== SETTINGS SCREEN ===== */
+.settings-body{padding:24px 20px 40px; max-width:560px; margin:0 auto; width:100%;}
+.field{margin-bottom:22px;}
+.field label{display:block; font-family:'JetBrains Mono'; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:#8a8478; margin-bottom:8px;}
+.field input[type=text],.field input[type=password]{
+  width:100%; padding:13px 16px; border-radius:12px; border:1.5px solid var(--line); font-family:'Lexend'; font-size:0.95rem; outline:none; background:#fff;
+}
+.field input:focus{border-color:var(--coral);}
+.field-hint{font-size:0.8rem; color:#7a7468; margin-top:7px; line-height:1.45;}
+.field-hint a{color:var(--coral-dark);}
+.toggle-row{display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line);}
+.toggle-row span{font-size:0.93rem;}
+.switch{position:relative; width:44px; height:25px; flex-shrink:0;}
+.switch input{opacity:0; width:0; height:0;}
+.switch .slider{position:absolute; inset:0; background:#dcd5c4; border-radius:999px; cursor:pointer; transition:.2s;}
+.switch .slider:before{content:""; position:absolute; width:19px; height:19px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s;}
+.switch input:checked + .slider{background:var(--coral);}
+.switch input:checked + .slider:before{transform:translateX(19px);}
+
+/* ===== HISTORY SCREEN ===== */
+.history-body{padding:24px 20px 40px; max-width:680px; margin:0 auto; width:100%;}
+.history-item{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px; display:flex; align-items:center; gap:14px;}
+.history-item .hscore{
+  width:46px; height:46px; border-radius:50%; background:var(--mint); display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  font-family:'Fraunces',serif; font-weight:700; font-size:1.05rem; color:var(--teal-deeper);
+}
+.history-item .hinfo{flex:1;}
+.history-item .hinfo h4{font-size:0.95rem; font-weight:600; margin-bottom:2px;}
+.history-item .hinfo span{font-size:0.78rem; color:#7a7468; font-family:'JetBrains Mono';}
+.empty-state{text-align:center; padding:60px 20px; color:#8a8478;}
+.empty-state svg{width:48px; height:48px; margin-bottom:14px; opacity:0.5;}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(120%); z-index:200;
+  background:var(--charcoal); color:#fff; padding:13px 22px; border-radius:12px; font-size:0.88rem; max-width:90%; text-align:center;
+  transition:transform .25s ease; box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+}
+
+button:focus-visible, input:focus-visible, .mode-card:focus-visible, .scenario-card:focus-visible{
+  outline:2.5px solid var(--coral); outline-offset:2px;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ================= HOME SCREEN ================= -->
+  <section class="screen active" id="screen-home">
+    <div class="hero">
+      <div class="topbar" style="padding:0 0 14px; background:transparent;">
+        <div class="brand">
+          <div class="brand-mark">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" stroke="#fff" stroke-width="1.8"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <span class="brand-name" style="color:var(--cream);">eBicara</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="btn-history-home" aria-label="Riwayat">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="icon-btn" id="btn-settings-home" aria-label="Pengaturan">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V19a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 17.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 13a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.36.51.86.86 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-inner">
+        <span class="hero-eyebrow">Latihan ngobrol · gratis selamanya</span>
+        <h1>Ngomong Inggris itu <em>soal jam terbang,</em><br>bukan soal bakat.</h1>
+        <p>Ngobrol langsung dengan AI, dapat koreksi seketika, dan biasakan lidahmu — tanpa biaya, tanpa daftar akun.</p>
+        <div class="mic-hero" aria-hidden="true">
+          <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+          <div class="core"><svg viewBox="0 0 24 24" fill="none"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" stroke="#fff" stroke-width="2"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wave-divider" style="background:var(--teal-deeper);">
+      <svg viewBox="0 0 1200 28" preserveAspectRatio="none"><path d="M0 14 Q 25 2 50 14 T 100 14 T 150 14 T 200 14 T 250 14 T 300 14 T 350 14 T 400 14 T 450 14 T 500 14 T 550 14 T 600 14 T 650 14 T 700 14 T 750 14 T 800 14 T 850 14 T 900 14 T 950 14 T 1000 14 T 1050 14 T 1100 14 T 1150 14 T 1200 14" stroke="#FAF3E7" stroke-width="1.5" fill="none" opacity="0.5"/></svg>
+    </div>
+
+    <div class="mode-section">
+      <div class="mode-grid">
+        <button class="mode-card" id="card-free">
+          <span class="tag">Mode 1</span>
+          <h3>Ngobrol Bebas</h3>
+          <p>Obrolan santai tanpa skrip. AI mengikuti arah ceritamu, seperti ngobrol sama teman.</p>
+          <span class="arrow">Mulai ngobrol <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="mode-card" id="card-scenario">
+          <span class="tag">Mode 2</span>
+          <h3>Skenario Topik</h3>
+          <p>Latihan situasi nyata: restoran, wawancara, bandara, dan lainnya, lengkap dengan peran AI.</p>
+          <span class="arrow">Pilih skenario <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+
+      <div class="level-row">
+        <label>Level kamu</label>
+        <div class="level-pills" id="level-pills">
+          <button class="level-pill" data-level="Pemula">Pemula</button>
+          <button class="level-pill active" data-level="Menengah">Menengah</button>
+          <button class="level-pill" data-level="Mahir">Mahir</button>
+        </div>
+      </div>
+
+      <div class="home-footer-links">
+        <button class="text-link" id="link-history">Riwayat latihan</button>
+        <button class="text-link" id="link-settings">Pengaturan API</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCENARIO SCREEN ================= -->
+  <section class="screen" id="screen-scenario">
+    <div class="topbar">
+      <button class="back-btn" data-back="screen-home"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Kembali</button>
+      <span class="brand-name" style="font-size:1rem;">Pilih Skenario</span>
+      <div style="width:38px;"></div>
+    </div>
+    <div class="scenario-screen-body">
+      <h2 class="section-title">Mau latihan situasi apa?</h2>
+      <p class="section-sub">AI akan berperan sesuai skenario yang kamu pilih.</p>
+      <div class="scenario-grid" id="scenario-grid"></div>
+    </div>
+  </section>
+
+  <!-- ================= CONVERSATION SCREEN ================= -->
+  <section class="screen" id="screen-convo">
+    <div class="convo-topbar">
+      <button class="back-btn" id="btn-leave-convo"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="convo-meta">
+        <span class="title" id="convo-title">Ngobrol Bebas</span>
+        <span class="sub" id="convo-sub">Level Menengah</span>
+      </div>
+      <button class="icon-btn" id="btn-end-session" aria-label="Akhiri sesi" style="background:rgba(255,111,89,0.18); border-color:var(--coral);">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <div class="mic-permission-banner" id="mic-permission-banner">
+      <div class="mpb-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" stroke="#fff" stroke-width="2"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="mpb-text">
+        <strong id="mpb-title">Izinkan akses mikrofon</strong>
+        <span id="mpb-desc">Biar kamu bisa langsung ngomong, bukan cuma ngetik.</span>
+      </div>
+      <button class="mpb-btn" id="btn-allow-mic">Izinkan</button>
+    </div>
+
+    <div class="chat-area" id="chat-area"></div>
+
+    <div class="interim-text" id="interim-text"></div>
+
+    <div class="convo-controls">
+      <div class="convo-controls-inner">
+        <div class="text-fallback">
+          <input type="text" id="text-input" placeholder="Ketik kalau tidak bisa pakai suara..." autocomplete="off">
+          <button id="btn-send-text" aria-label="Kirim"><svg viewBox="0 0 24 24" fill="none"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="mic-btn-wrap" id="mic-wrap">
+          <div class="ring"></div><div class="ring"></div>
+          <button class="mic-btn" id="mic-btn" aria-label="Tekan untuk bicara">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z" stroke="#fff" stroke-width="2"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SETTINGS SCREEN ================= -->
+  <section class="screen" id="screen-settings">
+    <div class="topbar">
+      <button class="back-btn" data-back="screen-home"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Kembali</button>
+      <span class="brand-name" style="font-size:1rem;">Pengaturan</span>
+      <div style="width:38px;"></div>
+    </div>
+    <div class="settings-body">
+      <div class="field">
+        <label>Gemini API Key</label>
+        <input type="password" id="input-api-key" placeholder="Tempel API key di sini">
+        <p class="field-hint">Kunci API gratis dari Google AI Studio. Disimpan hanya di browser kamu sendiri (localStorage), tidak dikirim ke server manapun selain Google. Dapatkan di <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>.</p>
+      </div>
+
+      <div class="toggle-row">
+        <span>Bacakan balasan AI (suara)</span>
+        <label class="switch"><input type="checkbox" id="toggle-tts" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row" style="border-bottom:none;">
+        <span>Kecepatan bicara AI lebih pelan</span>
+        <label class="switch"><input type="checkbox" id="toggle-slow"><span class="slider"></span></label>
+      </div>
+
+      <div style="margin-top:26px;">
+        <button class="btn btn-primary btn-block" id="btn-save-settings">Simpan Pengaturan</button>
+      </div>
+
+      <div style="margin-top:30px; padding-top:20px; border-top:1px solid var(--line);">
+        <p style="font-size:0.82rem; color:#7a7468; line-height:1.6;">eBicara berjalan sepenuhnya di browser kamu. Pengenalan suara pakai fitur bawaan Chrome, jadi pastikan pakai browser Chrome/Edge di desktop atau Android untuk hasil terbaik. Tidak ada data percakapan yang dikirim ke server eBicara — hanya ke Gemini API milik Google memakai API key kamu sendiri.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HISTORY SCREEN ================= -->
+  <section class="screen" id="screen-history">
+    <div class="topbar">
+      <button class="back-btn" data-back="screen-home"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Kembali</button>
+      <span class="brand-name" style="font-size:1rem;">Riwayat Latihan</span>
+      <div style="width:38px;"></div>
+    </div>
+    <div class="history-body" id="history-body"></div>
+  </section>
+
+</div>
+
+<!-- ================= SUMMARY MODAL ================= -->
+<div class="modal-overlay" id="modal-summary">
+  <div class="modal-card">
+    <h2>Sesi selesai 👏</h2>
+    <p style="color:#6b665b; font-size:0.88rem;" id="modal-meta">Ngobrol Bebas · Menengah</p>
+    <div class="score-badge"><span class="num" id="modal-score">8</span><span class="denom">/10</span></div>
+    <div class="summary-block">
+      <h4>Catatan Keseluruhan</h4>
+      <p id="modal-overall">—</p>
+    </div>
+    <div class="summary-block">
+      <h4>Yang Sudah Bagus</h4>
+      <ul id="modal-strengths"></ul>
+    </div>
+    <div class="summary-block">
+      <h4>Yang Perlu Dilatih Lagi</h4>
+      <ul id="modal-improve"></ul>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" id="btn-modal-home">Ke Beranda</button>
+      <button class="btn btn-primary btn-block" id="btn-modal-again">Latihan Lagi</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== STATE ===================== */
+const State = {
+  apiKey: localStorage.getItem('ebicara_api_key') || '',
+  level: localStorage.getItem('ebicara_level') || 'Menengah',
+  ttsOn: localStorage.getItem('ebicara_tts') !== 'off',
+  slowSpeech: localStorage.getItem('ebicara_slow') === 'on',
+  mode: null,            // 'free' | 'scenario'
+  scenario: null,        // {id,title,emoji,desc}
+  conversation: [],      // {role:'user'|'model', text}
+  isListening: false,
+  isSending: false,
+};
+
+const MODEL = "gemini-2.5-flash";
+const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
+
+/* ===================== SCENARIOS ===================== */
+const SCENARIOS = [
+  {id:'intro', emoji:'👋', title:'Perkenalan Diri', desc:'Self introduction'},
+  {id:'restaurant', emoji:'🍽️', title:'Di Restoran', desc:'Ordering food'},
+  {id:'airport', emoji:'✈️', title:'Di Bandara', desc:'Check-in & boarding'},
+  {id:'interview', emoji:'💼', title:'Wawancara Kerja', desc:'Job interview'},
+  {id:'shopping', emoji:'🛍️', title:'Belanja di Toko', desc:'Shopping for clothes'},
+  {id:'doctor', emoji:'🩺', title:'Janji ke Dokter', desc:"Doctor's appointment"},
+  {id:'travel', emoji:'🧳', title:'Liburan & Traveling', desc:'Travel small talk'},
+  {id:'school', emoji:'🎒', title:'Obrolan di Sekolah', desc:'School life chat'},
+  {id:'hotel', emoji:'🏨', title:'Pesan Kamar Hotel', desc:'Hotel booking'},
+  {id:'smalltalk', emoji:'☕', title:'Basa-basi Santai', desc:'Everyday small talk'},
+];
+
+/* ===================== DOM HELPERS ===================== */
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+function showScreen(id){
+  $$('.screen').forEach(s => s.classList.remove('active'));
+  $('#' + id).classList.add('active');
+  window.scrollTo({top:0});
+}
+
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+
+/* ===================== INIT UI ===================== */
+function initSettingsUI(){
+  $('#input-api-key').value = State.apiKey;
+  $('#toggle-tts').checked = State.ttsOn;
+  $('#toggle-slow').checked = State.slowSpeech;
+}
+
+function initLevelPills(){
+  $$('.level-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.level === State.level);
+    p.addEventListener('click', () => {
+      State.level = p.dataset.level;
+      localStorage.setItem('ebicara_level', State.level);
+      $$('.level-pill').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+    });
+  });
+}
+
+function renderScenarios(){
+  const grid = $('#scenario-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <button class="scenario-card" data-id="${s.id}">
+      <span class="emoji">${s.emoji}</span>
+      <div>
+        <h4>${s.title}</h4>
+        <span>${s.desc}</span>
+      </div>
+    </button>
+  `).join('');
+  $$('.scenario-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const sc = SCENARIOS.find(s => s.id === card.dataset.id);
+      State.scenario = sc;
+      State.mode = 'scenario';
+      startConversation();
+    });
+  });
+}
+
+/* ===================== NAVIGATION EVENTS ===================== */
+$$('[data-back]').forEach(b => b.addEventListener('click', () => showScreen(b.dataset.back)));
+$('#btn-settings-home').addEventListener('click', () => { initSettingsUI(); showScreen('screen-settings'); });
+$('#link-settings').addEventListener('click', () => { initSettingsUI(); showScreen('screen-settings'); });
+$('#btn-history-home').addEventListener('click', () => { renderHistory(); showScreen('screen-history'); });
+$('#link-history').addEventListener('click', () => { renderHistory(); showScreen('screen-history'); });
+
+$('#card-free').addEventListener('click', () => {
+  State.mode = 'free';
+  State.scenario = null;
+  startConversation();
+});
+$('#card-scenario').addEventListener('click', () => {
+  renderScenarios();
+  showScreen('screen-scenario');
+});
+
+$('#btn-save-settings').addEventListener('click', () => {
+  State.apiKey = $('#input-api-key').value.trim();
+  State.ttsOn = $('#toggle-tts').checked;
+  State.slowSpeech = $('#toggle-slow').checked;
+  localStorage.setItem('ebicara_api_key', State.apiKey);
+  localStorage.setItem('ebicara_tts', State.ttsOn ? 'on' : 'off');
+  localStorage.setItem('ebicara_slow', State.slowSpeech ? 'on' : 'off');
+  toast('Pengaturan disimpan.');
+  showScreen('screen-home');
+});
+
+$('#btn-leave-convo').addEventListener('click', () => {
+  stopListening();
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  showScreen('screen-home');
+});
+
+/* ===================== CONVERSATION ENGINE ===================== */
+function startConversation(){
+  if(!State.apiKey){
+    toast('Isi dulu Gemini API Key di Pengaturan ya.');
+    initSettingsUI();
+    showScreen('screen-settings');
+    return;
+  }
+  State.conversation = [];
+  $('#chat-area').innerHTML = '';
+  $('#convo-title').textContent = State.mode === 'free' ? 'Ngobrol Bebas' : State.scenario.title;
+  $('#convo-sub').textContent = 'Level ' + State.level;
+  showScreen('screen-convo');
+  checkMicPermission();
+
+  const opener = State.mode === 'free'
+    ? "Hi there! I'm so glad you're here to practice English with me today. What would you like to talk about?"
+    : sceneOpener(State.scenario.id);
+  appendBubble('ai', opener);
+  State.conversation.push({role:'model', text: opener});
+  speak(opener);
+}
+
+function sceneOpener(id){
+  const openers = {
+    intro: "Hi! I don't think we've met before. What's your name?",
+    restaurant: "Good evening! Welcome in. Do you have a reservation, or would you like a table for now?",
+    airport: "Good morning! Welcome to check-in. Can I see your passport and ticket, please?",
+    interview: "Thanks for coming in today. So, tell me a little about yourself.",
+    shopping: "Hi! Let me know if you need any help finding something today.",
+    doctor: "Hello, I'm calling from the clinic to confirm your appointment. What seems to be the problem?",
+    travel: "Hey! I heard you're planning a trip soon. Where are you thinking of going?",
+    school: "Hey, how was class today? Did you finish the assignment?",
+    hotel: "Good afternoon, thanks for calling Grand Sunrise Hotel. How can I help you today?",
+    smalltalk: "Hey! Nice weather today, right? How's your day going so far?"
+  };
+  return openers[id] || "Hi! Let's start chatting.";
+}
+
+function appendBubble(role, text){
+  const area = $('#chat-area');
+  const row = document.createElement('div');
+  row.className = 'bubble-row ' + (role === 'user' ? 'user' : 'ai');
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  area.appendChild(row);
+  area.scrollTop = area.scrollHeight;
+  return row;
+}
+
+function appendTyping(){
+  const area = $('#chat-area');
+  const row = document.createElement('div');
+  row.className = 'bubble-row ai';
+  row.id = 'typing-row';
+  row.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+  area.appendChild(row);
+  area.scrollTop = area.scrollHeight;
+}
+function removeTyping(){
+  const row = $('#typing-row');
+  if(row) row.remove();
+}
+
+function appendCorrections(corrections){
+  if(!corrections || corrections.length === 0) return;
+  const area = $('#chat-area');
+  const card = document.createElement('div');
+  card.className = 'correction-card';
+  card.innerHTML = `<div class="ch">✏️ Koreksi kecil</div>` + corrections.map(c => `
+    <div class="correction-item">
+      <span class="orig">${escapeHtml(c.original)}</span> → <span class="fix">${escapeHtml(c.corrected)}</span>
+      <span class="why">${escapeHtml(c.explanation)}</span>
+    </div>
+  `).join('');
+  area.appendChild(card);
+  area.scrollTop = area.scrollHeight;
+}
+
+function appendVocabTip(tip){
+  if(!tip) return;
+  const area = $('#chat-area');
+  const card = document.createElement('div');
+  card.className = 'vocab-tip';
+  card.innerHTML = `<b>💡 Kosakata baru</b>${escapeHtml(tip)}`;
+  area.appendChild(card);
+  area.scrollTop = area.scrollHeight;
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+
+/* ===================== SENDING MESSAGES ===================== */
+async function sendUserMessage(text){
+  text = text.trim();
+  if(!text || State.isSending) return;
+  appendBubble('user', text);
+  State.conversation.push({role:'user', text});
+  $('#text-input').value = '';
+  State.isSending = true;
+  appendTyping();
+  setMicEnabled(false);
+
+  try{
+    const data = await callGemini(buildTurnSystemPrompt(), buildContents());
+    removeTyping();
+    const reply = data.reply || "Sorry, can you say that again?";
+    appendBubble('ai', reply);
+    State.conversation.push({role:'model', text: reply});
+    appendCorrections(data.corrections);
+    appendVocabTip(data.vocab_tip);
+    speak(reply);
+  }catch(err){
+    removeTyping();
+    console.error(err);
+    toast(err.message || 'Gagal menghubungi Gemini API. Coba lagi.');
+  }finally{
+    State.isSending = false;
+    setMicEnabled(true);
+  }
+}
+
+function buildTurnSystemPrompt(){
+  const persona = State.mode === 'free'
+    ? "Kamu berperan sebagai teman ngobrol santai berbahasa Inggris. Ajak ngobrol topik apapun yang user mau, ikuti arah ceritanya, dan ajukan pertanyaan balik."
+    : `Kamu berperan sebagai karakter dalam skenario "${State.scenario.title}" (${State.scenario.desc}). Tetap dalam karakter sesuai skenario ini sepanjang percakapan.`;
+
+  return `Kamu adalah AI pelatih percakapan Bahasa Inggris untuk pengguna Indonesia bernama "eBicara". ${persona}
+
+ATURAN WAJIB:
+1. Balas SELALU dalam Bahasa Inggris, dengan tingkat kesulitan kosakata & struktur kalimat untuk level: ${State.level} (Pemula=A1-A2 sederhana, Menengah=B1-B2, Mahir=C1 ke atas, lebih kompleks dan idiomatik).
+2. Jaga balasan singkat dan natural, 2-4 kalimat, dan akhiri dengan pertanyaan balik untuk menjaga percakapan tetap mengalir.
+3. Periksa pesan TERAKHIR dari user (bahasa Inggrisnya) untuk kesalahan grammar, pemilihan kata, atau struktur kalimat. Jika ditemukan kesalahan yang berarti, sertakan di "corrections". Jika kalimat user sudah benar atau hampir benar, biarkan array "corrections" kosong — jangan mengada-ada kesalahan yang tidak ada.
+4. Sesekali (tidak harus setiap giliran) berikan satu kosakata atau frasa baru yang relevan dengan konteks percakapan di "vocab_tip". Jika tidak ada yang relevan, kosongkan string.
+5. WAJIB balas HANYA dengan JSON valid sesuai skema berikut, tanpa teks lain, tanpa markdown, tanpa backticks:
+{"reply": "balasan dalam Bahasa Inggris", "corrections": [{"original": "bagian kalimat user yang salah", "corrected": "versi yang benar", "explanation": "penjelasan singkat dalam Bahasa Indonesia, ramah dan tidak menggurui"}], "vocab_tip": "satu tips kosakata singkat dalam Bahasa Indonesia menjelaskan satu kata/frasa Inggris, atau string kosong"}`;
+}
+
+function buildContents(){
+  return State.conversation.map(m => ({
+    role: m.role,
+    parts: [{text: m.text}]
+  }));
+}
+
+async function callGemini(systemPrompt, contents, generationOverrides){
+  if(!State.apiKey) throw new Error('Gemini API Key belum diisi. Buka Pengaturan dulu ya.');
+  const url = API_BASE + MODEL + ':generateContent?key=' + encodeURIComponent(State.apiKey);
+  const body = {
+    contents: contents,
+    systemInstruction: {parts: [{text: systemPrompt}]},
+    generationConfig: Object.assign({
+      responseMimeType: "application/json",
+      temperature: 0.8,
+    }, generationOverrides || {})
+  };
+
+  let lastErr;
+  for(let attempt = 0; attempt < 3; attempt++){
+    try{
+      const res = await fetch(url, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      if(!res.ok){
+        const errJson = await res.json().catch(()=>({}));
+        const msg = (errJson.error && errJson.error.message) || ('HTTP ' + res.status);
+        if(res.status === 429 || res.status >= 500){
+          lastErr = new Error('Server Gemini sedang sibuk: ' + msg);
+          await new Promise(r => setTimeout(r, 1200 * (attempt+1)));
+          continue;
+        }
+        throw new Error(msg);
+      }
+      const json = await res.json();
+      const cand = json.candidates && json.candidates[0];
+      if(!cand) throw new Error('Tidak ada balasan dari Gemini.');
+      let raw = (cand.content && cand.content.parts && cand.content.parts.map(p=>p.text||'').join('')) || '';
+      raw = raw.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+      return JSON.parse(raw);
+    }catch(e){
+      lastErr = e;
+      if(e instanceof SyntaxError){
+        // JSON parse fail - don't retry endlessly
+        throw new Error('Gagal membaca balasan AI. Coba kirim pesan lagi.');
+      }
+    }
+  }
+  throw lastErr || new Error('Gagal menghubungi Gemini API.');
+}
+
+/* ===================== TEXT INPUT ===================== */
+$('#btn-send-text').addEventListener('click', () => sendUserMessage($('#text-input').value));
+$('#text-input').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') sendUserMessage($('#text-input').value);
+});
+
+/* ===================== SPEECH RECOGNITION ===================== */
+let recognition = null;
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function initRecognition(){
+  if(!SpeechRecognitionAPI) return null;
+  const r = new SpeechRecognitionAPI();
+  r.lang = 'en-US';
+  r.continuous = false;
+  r.interimResults = true;
+  r.maxAlternatives = 1;
+
+  r.onresult = (e) => {
+    let interim = '', final = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      const t = e.results[i][0].transcript;
+      if(e.results[i].isFinal) final += t; else interim += t;
+    }
+    $('#interim-text').textContent = interim;
+    if(final.trim()){
+      $('#interim-text').textContent = '';
+      sendUserMessage(final);
+    }
+  };
+  r.onerror = (e) => {
+    if(e.error === 'no-speech'){ /* ignore */ }
+    else if(e.error === 'not-allowed' || e.error === 'service-not-allowed'){
+      toast('Akses mikrofon ditolak. Izinkan mikrofon di browser dulu ya.');
+    } else {
+      toast('Pengenalan suara bermasalah: ' + e.error);
+    }
+    stopListening();
+  };
+  r.onend = () => { stopListening(); };
+  return r;
+}
+
+function setMicEnabled(enabled){
+  $('#mic-btn').disabled = !enabled;
+}
+
+function startListening(){
+  if(!SpeechRecognitionAPI){
+    toast('Browser ini tidak mendukung pengenalan suara. Pakai kotak teks di bawah ya, atau buka dengan Chrome.');
+    return;
+  }
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  recognition = recognition || initRecognition();
+  if(!recognition) return;
+  try{
+    recognition.start();
+    State.isListening = true;
+    $('#mic-wrap').classList.add('listening');
+    $('#mic-btn').classList.add('listening');
+  }catch(e){ /* already started */ }
+}
+
+function stopListening(){
+  State.isListening = false;
+  $('#mic-wrap').classList.remove('listening');
+  $('#mic-btn').classList.remove('listening');
+  $('#interim-text').textContent = '';
+  if(recognition){ try{ recognition.stop(); }catch(e){} }
+}
+
+$('#mic-btn').addEventListener('click', () => {
+  if(State.isSending) return;
+  if(State.isListening) stopListening();
+  else startListening();
+});
+
+/* ===================== TEXT TO SPEECH ===================== */
+let cachedVoice = null;
+function pickVoice(){
+  if(cachedVoice) return cachedVoice;
+  const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  cachedVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang && v.lang.startsWith('en')) || null;
+  return cachedVoice;
+}
+if(window.speechSynthesis){
+  window.speechSynthesis.onvoiceschanged = () => { cachedVoice = null; pickVoice(); };
+}
+
+function speak(text){
+  if(!State.ttsOn || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  const v = pickVoice();
+  if(v) u.voice = v;
+  u.rate = State.slowSpeech ? 0.8 : (State.level === 'Mahir' ? 1.04 : 1.0);
+  window.speechSynthesis.speak(u);
+}
+
+/* ===================== END SESSION / SUMMARY ===================== */
+$('#btn-end-session').addEventListener('click', endSession);
+
+async function endSession(){
+  if(State.conversation.length < 2){
+    showScreen('screen-home');
+    return;
+  }
+  stopListening();
+  window.speechSynthesis && window.speechSynthesis.cancel();
+
+  const transcript = State.conversation.map(m => (m.role === 'user' ? 'User: ' : 'AI: ') + m.text).join('\n');
+  const sysPrompt = `Kamu adalah evaluator latihan percakapan Bahasa Inggris. Berikut transkrip percakapan antara user (pembelajar level ${State.level}) dan AI:\n\n${transcript}\n\nBerikan evaluasi ringkas dan suportif dalam Bahasa Indonesia. WAJIB balas HANYA JSON sesuai skema berikut, tanpa teks lain:\n{"score": angka 1-10 mencerminkan kelancaran & akurasi user pada sesi ini, "overall": "1-2 kalimat catatan umum yang suportif", "strengths": ["poin singkat hal yang sudah bagus", "..."], "improve": ["poin singkat hal yang perlu dilatih lagi", "..."]}`;
+
+  try{
+    toast('Menyusun ringkasan sesi...');
+    const data = await callGemini(sysPrompt, [{role:'user', parts:[{text:'Tolong evaluasi sesi ini.'}]}]);
+    showSummaryModal(data);
+    saveSessionHistory(data);
+  }catch(err){
+    console.error(err);
+    toast('Gagal membuat ringkasan, tapi sesi tetap tersimpan.');
+    saveSessionHistory({score: null, overall:'', strengths:[], improve:[]});
+    showScreen('screen-home');
+  }
+}
+
+function showSummaryModal(data){
+  $('#modal-meta').textContent = (State.mode === 'free' ? 'Ngobrol Bebas' : State.scenario.title) + ' · ' + State.level;
+  $('#modal-score').textContent = (data.score != null) ? data.score : '–';
+  $('#modal-overall').textContent = data.overall || '—';
+  $('#modal-strengths').innerHTML = (data.strengths||[]).map(s => `<li>${escapeHtml(s)}</li>`).join('') || '<li>—</li>';
+  $('#modal-improve').innerHTML = (data.improve||[]).map(s => `<li>${escapeHtml(s)}</li>`).join('') || '<li>—</li>';
+  $('#modal-summary').classList.add('active');
+}
+
+$('#btn-modal-home').addEventListener('click', () => {
+  $('#modal-summary').classList.remove('active');
+  showScreen('screen-home');
+});
+$('#btn-modal-again').addEventListener('click', () => {
+  $('#modal-summary').classList.remove('active');
+  startConversation();
+});
+
+function saveSessionHistory(data){
+  const list = JSON.parse(localStorage.getItem('ebicara_history') || '[]');
+  list.unshift({
+    date: new Date().toISOString(),
+    mode: State.mode,
+    title: State.mode === 'free' ? 'Ngobrol Bebas' : State.scenario.title,
+    level: State.level,
+    score: data.score,
+    overall: data.overall,
+    turns: State.conversation.filter(m=>m.role==='user').length
+  });
+  localStorage.setItem('ebicara_history', JSON.stringify(list.slice(0, 50)));
+}
+
+function renderHistory(){
+  const body = $('#history-body');
+  const list = JSON.parse(localStorage.getItem('ebicara_history') || '[]');
+  if(list.length === 0){
+    body.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p>Belum ada riwayat latihan.<br>Yuk mulai sesi pertamamu!</p>
+    </div>`;
+    return;
+  }
+  body.innerHTML = list.map(h => {
+    const d = new Date(h.date);
+    const dateStr = d.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+    return `<div class="history-item">
+      <div class="hscore">${h.score != null ? h.score : '–'}</div>
+      <div class="hinfo">
+        <h4>${escapeHtml(h.title)} · ${escapeHtml(h.level)}</h4>
+        <span>${dateStr} · ${h.turns} giliran ngomong</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== MIC PERMISSION ===================== */
+function updateMicBanner(state){
+  // state: 'unknown' | 'prompt' | 'granted' | 'denied' | 'unsupported'
+  const banner = $('#mic-permission-banner');
+  const title = $('#mpb-title');
+  const desc = $('#mpb-desc');
+  const btn = $('#btn-allow-mic');
+  banner.classList.remove('denied');
+
+  if(state === 'granted'){
+    banner.classList.remove('show');
+    return;
+  }
+  if(state === 'unsupported'){
+    banner.classList.add('show', 'denied');
+    title.textContent = 'Mikrofon tidak didukung browser ini';
+    desc.textContent = 'Pakai Chrome atau Edge supaya bisa ngomong langsung, atau ketik saja di kotak teks.';
+    btn.style.display = 'none';
+    return;
+  }
+  if(state === 'denied'){
+    banner.classList.add('show', 'denied');
+    title.textContent = 'Akses mikrofon diblokir';
+    desc.textContent = 'Buka ikon gembok di address bar, izinkan Microphone, lalu muat ulang halaman.';
+    btn.style.display = 'none';
+    return;
+  }
+  // prompt / unknown
+  banner.classList.add('show');
+  title.textContent = 'Izinkan akses mikrofon';
+  desc.textContent = 'Biar kamu bisa langsung ngomong, bukan cuma ngetik.';
+  btn.style.display = '';
+  btn.textContent = 'Izinkan';
+  btn.disabled = false;
+}
+
+async function requestMicAccess(){
+  const btn = $('#btn-allow-mic');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    updateMicBanner('unsupported');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Meminta izin...';
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(t => t.stop());
+    updateMicBanner('granted');
+    toast('Mikrofon siap dipakai.');
+  }catch(err){
+    updateMicBanner('denied');
+  }
+}
+
+async function checkMicPermission(){
+  if(!SpeechRecognitionAPI || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    updateMicBanner('unsupported');
+    return;
+  }
+  if(navigator.permissions && navigator.permissions.query){
+    try{
+      const status = await navigator.permissions.query({name:'microphone'});
+      updateMicBanner(status.state); // 'granted' | 'denied' | 'prompt'
+      status.onchange = () => updateMicBanner(status.state);
+      return;
+    }catch(e){ /* fall through */ }
+  }
+  updateMicBanner('prompt');
+}
+
+$('#btn-allow-mic').addEventListener('click', requestMicAccess);
+
+/* ===================== BOOT ===================== */
+initLevelPills();
+initSettingsUI();
+if(!State.apiKey){
+  // gentle nudge, but don't force navigation on load
+  setTimeout(() => toast('Tips: isi Gemini API Key gratis di Pengaturan sebelum mulai ngobrol.'), 900);
+}
+
+})();
+</script>
+</body>
+</html>
